@@ -5,6 +5,8 @@ import Dashboard from './pages/Dashboard';
 import DetectorStudio from './pages/DetectorStudio';
 import LandingPage from './pages/LandingPage';
 import LiveCallDetector from './pages/LiveCallDetector';
+import ProctoringDemo from './pages/ProctoringDemo';
+
 
 function App() {
   return (
@@ -68,6 +70,10 @@ function App() {
               <SignedOut><Navigate to="/sign-in" replace /></SignedOut>
             </>
           } />
+
+          {/* Dedicated Proctoring Demo Route — Easy Run/Test */}
+          <Route path="/proctoring-demo" element={<ProctoringDemo />} />
+
         </Routes>
       </ClerkLoaded>
     </>

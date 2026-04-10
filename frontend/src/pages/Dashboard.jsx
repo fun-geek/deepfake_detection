@@ -3,7 +3,7 @@ import { useUser, UserButton } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import {
-  Shield, Camera, Activity, ShieldAlert,
+  Shield, Camera, Activity, ShieldAlert, ShieldCheck,
   ChevronRight, BarChart3, Database,
   User, CheckCircle2, Zap, ArrowUpRight, Layers, Video
 } from 'lucide-react';
@@ -31,11 +31,11 @@ export default function Dashboard() {
       { opacity: 0, y: -20 },
       { opacity: 1, y: 0, duration: 0.8 }
     )
-    .fromTo(cardsRef.current,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.8, stagger: 0.1 },
-      '-=0.6'
-    );
+      .fromTo(cardsRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.8, stagger: 0.1 },
+        '-=0.6'
+      );
   }, []);
 
   const addToRefs = (el) => {
@@ -181,7 +181,30 @@ export default function Dashboard() {
         </button>
 
         {/* Right side */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          {/* Proctoring Link */}
+          <button
+            onClick={() => navigate('/proctoring-demo')}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: 11, fontWeight: 600, color: '#a1a1aa',
+              padding: '6px 10px', borderRadius: 8,
+              transition: 'all 0.2s',
+              display: 'flex', alignItems: 'center', gap: 6,
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.color = '#fff';
+              e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.color = '#a1a1aa';
+              e.currentTarget.style.background = 'none';
+            }}
+          >
+            <ShieldCheck size={12} color="#f59e0b" />
+            Security Playground
+          </button>
+
           {/* System status pill */}
           <div style={{
             display: 'flex', alignItems: 'center', gap: 7,
@@ -272,26 +295,57 @@ export default function Dashboard() {
               </p>
             </div>
 
-            {/* Launch Studio CTA */}
-            <button
-              onClick={() => navigate('/detector')}
-              className="btn-shimmer"
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '12px 22px', borderRadius: 14,
-                border: 'none', color: '#080808',
-                fontSize: 13, fontWeight: 700,
-                cursor: 'pointer', flexShrink: 0,
-                fontFamily: 'DM Sans, sans-serif',
-                boxShadow: '0 0 30px rgba(52,211,153,0.25)',
-              }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-            >
-              <Camera size={14} />
-              Launch Studio
-              <ArrowUpRight size={13} />
-            </button>
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', gap: 12 }}>
+              {/* Proctoring Demo CTA */}
+              <button
+                onClick={() => navigate('/proctoring-demo')}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '12px 22px', borderRadius: 14,
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: 'rgba(255,255,255,0.03)',
+                  color: '#fff',
+                  fontSize: 13, fontWeight: 700,
+                  cursor: 'pointer', flexShrink: 0,
+                  fontFamily: 'DM Sans, sans-serif',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                <ShieldCheck size={14} color="#f59e0b" />
+                Proctoring Demo
+              </button>
+
+              {/* Launch Studio CTA */}
+              <button
+                onClick={() => navigate('/detector')}
+                className="btn-shimmer"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '12px 22px', borderRadius: 14,
+                  border: 'none', color: '#080808',
+                  fontSize: 13, fontWeight: 700,
+                  cursor: 'pointer', flexShrink: 0,
+                  fontFamily: 'DM Sans, sans-serif',
+                  boxShadow: '0 0 30px rgba(52,211,153,0.25)',
+                  transition: 'transform 0.2s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+              >
+                <Camera size={14} />
+                Launch Studio
+                <ArrowUpRight size={13} />
+              </button>
+            </div>
           </div>
 
           {/* ════ BENTO GRID ════
@@ -300,8 +354,7 @@ export default function Dashboard() {
           ════════════════════════ */}
           <div ref={addToRefs} style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr 1fr',
-            gridTemplateRows: 'auto',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
             gap: 16,
           }}>
 
@@ -426,10 +479,59 @@ export default function Dashboard() {
               </div>
             </div>
 
+            {/* ── INTEGRITY GUARD STATUS (Proctoring Demo) ── */}
+            <div className="noise" style={{
+              position: 'relative', overflow: 'hidden',
+              padding: 24, borderRadius: 20,
+              border: '1px solid rgba(245,158,11,0.15)',
+              background: 'rgba(10,10,10,0.9)',
+              display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+              minHeight: 190,
+              cursor: 'pointer',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+            onClick={() => navigate('/proctoring-demo')}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = 'rgba(245,158,11,0.3)';
+              e.currentTarget.style.transform = 'scale(1.02)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = 'rgba(245,158,11,0.15)';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+            >
+              <div style={{ position: 'absolute', right: -20, top: -20, opacity: 0.1 }}>
+                <ShieldCheck size={88} color="#f59e0b" />
+              </div>
+              <div>
+                <p style={{
+                  fontSize: 10, fontWeight: 700, letterSpacing: '0.1em',
+                  textTransform: 'uppercase', color: '#f59e0b', marginBottom: 14,
+                }}>Security Integrity</p>
+                <h3 className="stat-val" style={{
+                  fontFamily: 'Syne, sans-serif', fontWeight: 800,
+                  fontSize: 30, letterSpacing: '-0.03em', color: '#fff', margin: 0,
+                }}>Active</h3>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{
+                  padding: '4px 8px', borderRadius: 6,
+                  background: 'rgba(245,158,11,0.1)',
+                  border: '1px solid rgba(245,158,11,0.2)',
+                  fontSize: 10, color: '#f59e0b', fontWeight: 700,
+                  display: 'flex', alignItems: 'center', gap: 5
+                }}>
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#f59e0b', animation: 'pulse 1.5s infinite' }} />
+                  GUARD RUNNING
+                </div>
+                <p style={{ fontSize: 11, color: '#71717a' }}>Demo Mode</p>
+              </div>
+            </div>
+
           </div>
 
           {/* ════ QUICK ACTIONS ROW ════ */}
-          <div ref={addToRefs} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12 }}>
+          <div ref={addToRefs} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
             {[
               {
                 icon: Camera, label: 'Live Detection',
@@ -455,7 +557,13 @@ export default function Dashboard() {
                 action: () => navigate('/live-call'),
                 accent: '#c084fc',  // purple-400 — distinct from other cards
               },
-            // eslint-disable-next-line no-unused-vars
+              {
+                icon: ShieldCheck, label: 'Proctoring Playground',
+                desc: 'Verify anti-cheating protocols',
+                action: () => navigate('/proctoring-demo'),
+                accent: '#f59e0b',  // amber-500
+              },
+              // eslint-disable-next-line no-unused-vars
             ].map(({ icon: Icon, label, desc, action, accent }) => (
               <button
                 key={label}

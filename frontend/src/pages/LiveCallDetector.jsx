@@ -29,6 +29,9 @@ import ScanHistoryLog from '../components/live-call/ScanHistoryLog';
 import AlertBanner from '../components/live-call/AlertBanner';
 import StudioHeader from '../components/live-call/StudioHeader';
 import StudioSidebar from '../components/live-call/StudioSidebar';
+import ProctoringGuard from '../components/live-call/ProctoringGuard';
+import ViolationHistory from '../components/live-call/ViolationHistory';
+import { useLocation } from 'react-router-dom';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const AI_SERVER_URL = import.meta.env.VITE_AI_SERVER_URL || 'http://localhost:8000';
@@ -66,6 +69,16 @@ export default function LiveCallDetector() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);   // request in-flight
   const [totalScans, setTotalScans] = useState(0);
   const [fakeCount, setFakeCount] = useState(0);
+  const [violations, setViolations] = useState([]);
+
+  // ── Proctoring Logic ──────────────────────────────────────────────────────
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const isCandidate = searchParams.get('role') === 'candidate';
+
+  const handleViolation = useCallback((v) => {
+    setViolations(prev => [v, ...prev]);
+  }, []);
 
   // ── Core: send one frame to /predict ──────────────────────────────────────
   const runPrediction = useCallback(async () => {
@@ -182,6 +195,7 @@ export default function LiveCallDetector() {
       style={{ fontFamily: "'DM Sans', sans-serif" }}
       className="h-screen w-screen bg-[#080808] text-white flex flex-col overflow-hidden"
     >
+      <ProctoringGuard isEnabled={isCandidate} onViolation={handleViolation} />
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
         ::-webkit-scrollbar       { width: 3px; }
@@ -410,6 +424,23 @@ export default function LiveCallDetector() {
                   )}
                 </div>
                 <ScanHistoryLog history={history} />
+              </div>
+
+              {/* Integrity / Proctoring Log (Visible to both, but strictly monitors candidate) */}
+              <div
+                style={{
+                  padding: '16px 14px',
+                  borderRadius: 18,
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  background: 'rgba(255,255,255,0.02)',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+              >
+                <ViolationHistory 
+                  violations={violations} 
+                  onClear={!isCandidate ? () => setViolations([]) : null} 
+                />
               </div>
 
             </div>
